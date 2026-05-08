@@ -8,6 +8,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get('/', (req, res) => {
+  res.send('Hello World!, Bienvenue sur la page d\'inscription de la soirée gala');
+});
+
 app.post('/api/orders', async (req, res) => {
   try {
     const { nom, prenom, email, cin, idAsebem, pack, nombrePersonnes, beneficiaires } = req.body;
@@ -43,7 +47,7 @@ const JWT_SECRET = process.env.JWT_SECRET || "gala_asebem_super_secret_2026";
 app.post('/api/admin/signup', async (req, res) => {
   try {
     const { username, password } = req.body;
-    
+
     const existingAdmin = await prisma.admin.findUnique({ where: { username } });
     if (existingAdmin) {
       return res.status(400).json({ error: 'Cet utilisateur existe déjà' });
@@ -66,7 +70,7 @@ app.post('/api/admin/signup', async (req, res) => {
 app.post('/api/admin/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    
+
     const admin = await prisma.admin.findUnique({ where: { username } });
     if (!admin) {
       return res.status(401).json({ error: 'Identifiants invalides' });
@@ -91,7 +95,7 @@ const requireAdmin = (req: express.Request, res: express.Response, next: express
     res.status(401).json({ error: 'Non autorisé' });
     return;
   }
-  
+
   const token = authHeader.split(' ')[1];
   try {
     jwt.verify(token, JWT_SECRET);
